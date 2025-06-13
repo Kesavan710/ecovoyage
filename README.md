@@ -24,7 +24,7 @@
 | Kesavan        | [Kesavan710](https://github.com/Kesavan710)         |
 | Rohan Hiremath | [rohanhiremath](https://github.com/rohanhiremath)       |
 | Suraj K S      | [surajks](https://github.com/Suraj-Khatokar)                   |
-| Venu R         | [@Venu-R](https://github.com/Venu-R)                       |
+| Venu R         | [Venu-R](https://github.com/Venu-R)                       |
 
 
 
@@ -59,5 +59,5 @@
 ### Challenges
 ![challenges](screenshots/challenges.png)
 
-### Mobile View
+### Booking section
 ![booking](screenshots/evbooking.png)
