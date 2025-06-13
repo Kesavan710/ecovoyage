@@ -48,7 +48,7 @@
 ![progress](screenshots/progress.png)
 
 
-![progress](screenshotsprogress2.png)
+![progress](screenshots/progress2.png)
 
 ### Rewards
 ![Settings](screenshots/rewards.png)
