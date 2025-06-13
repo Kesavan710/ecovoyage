@@ -25,3 +25,39 @@
 | Rohan Hiremath | [rohanhiremath](https://github.com/rohanhiremath)       |
 | Suraj K S      | [surajks](https://github.com/Suraj-Khatokar)                   |
 | Venu R         | [@Venu-R](https://github.com/Venu-R)                       |
+
+
+
+# Project Name
+
+## Screenshots
+
+### Login page
+![Home Page](screenshots/login.png)
+
+### Dashboard
+![dashboard](screenshots/dashboard.png)
+
+### Ecotrack
+![calculate emissions](screenshots/ecotrack.png)
+
+
+![](screenshots/ecotrack2.png)
+
+### Progress
+![progress](screenshots/progress.png)
+
+
+![progress](screenshotsprogress2.png)
+
+### Rewards
+![Settings](screenshots/rewards.png)
+
+### Tips
+![tips](screenshots/tips.png)
+
+### Challenges
+![challenges](screenshots/challenges.png)
+
+### Mobile View
+![booking](screenshots/evbooking.png)
