@@ -21,7 +21,7 @@
 
 | Name           | GitHub Profile                     |
 |----------------|-------------------------------------|
-| Kesavan        | [Kesavan710](https://github.com/yourusername)         |
-| Rohan Hiremath | [@rohanhiremath](https://github.com/rohanhiremath)       |
-| Suraj K S      | [@surajks](https://github.com/surajks)                   |
-| Venu R         | [@venur](https://github.com/venur)                       |
+| Kesavan        | [Kesavan710](https://github.com/Kesavan710)         |
+| Rohan Hiremath | [rohanhiremath](https://github.com/rohanhiremath)       |
+| Suraj K S      | [surajks](https://github.com/Suraj-Khatokar)                   |
+| Venu R         | [@Venu-R](https://github.com/Venu-R)                       |
