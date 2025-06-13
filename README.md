@@ -1,6 +1,6 @@
-# EcoTrack – Sustainable Travel & EV Booking Platform
+# EcoVoyage – Sustainable Travel & EV Booking Platform
 
-**EcoTrack** is a web-based application designed to promote sustainable travel through CO₂ tracking, rewards for eco-friendly habits, and EV vehicle booking features.
+**EcoVoyage** is a web-based application designed to promote sustainable travel through CO₂ tracking, rewards for eco-friendly habits, and EV vehicle booking features.
 
 ## 🌱 Features
 
