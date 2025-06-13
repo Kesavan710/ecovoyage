@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoRide Booking</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background: #45a049;
+    }
+    .suggestions-dropdown {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      z-index: 1000;
+      width: calc(100% - 40px);
+      max-height: 200px;
+      overflow-y: auto;
+      border-radius: 4px;
+    }
+    .suggestion-item {
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .suggestion-item:hover {
+      background: #f0f0f0;
+    }
+    .hidden {
+      display: none;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Book Your EcoRide</h2>
+    <div style="position: relative;">
+      <input type="text" id="pickup" placeholder="Pickup Location" autocomplete="off">
+      <div id="pickup-dropdown" class="suggestions-dropdown hidden"></div>
+    </div>
+    <div style="position: relative;">
+      <input type="text" id="drop" placeholder="Drop Location" autocomplete="off">
+      <div id="drop-dropdown" class="suggestions-dropdown hidden"></div>
+    </div>
+    <button class="btn" onclick="bookRide()">Book Ride</button>
+    <div class="result" id="ride-info"></div>
+  </div>
+
+  <script>
+    const LOCATIONIQ_API_KEY = 'pk.ace5c9ce9975451c9ec861c0c0873d3a';
+    const LOCATIONIQ_API_URL = 'https://us1.locationiq.com/v1';
+
+    const pickupInput = document.getElementById('pickup');
+    const dropInput = document.getElementById('drop');
+    const pickupDropdown = document.getElementById('pickup-dropdown');
+    const dropDropdown = document.getElementById('drop-dropdown');
+    const rideInfo = document.getElementById('ride-info');
+
+    let debounceTimer;
+
+    function handleInput(inputElement, dropdown) {
+      const query = inputElement.value.trim();
+      if (query.length < 2) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(async () => {
+        try {
+          const response = await fetch(`${LOCATIONIQ_API_URL}/autocomplete.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&limit=8&format=json`);
+          const data = await response.json();
+          showSuggestions(data, dropdown, inputElement);
+        } catch (error) {
+          console.error("Autocomplete error:", error);
+          dropdown.classList.add('hidden');
+        }
+      }, 300);
+    }
+
+    function showSuggestions(suggestions, dropdown, inputElement) {
+      dropdown.innerHTML = '';
+      if (!suggestions || suggestions.length === 0) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+      suggestions.forEach(item => {
+        const suggestion = document.createElement('div');
+        suggestion.className = 'suggestion-item';
+        suggestion.innerHTML = `
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <div class="name">${item.display_name.split(',')[0]}</div>
+            <div class="address">${item.display_name.split(',').slice(1, 3).join(',').trim()}</div>
+          </div>
+        `;
+        suggestion.addEventListener('click', () => {
+          inputElement.value = item.display_name;
+          inputElement.dataset.lat = item.lat;
+          inputElement.dataset.lon = item.lon;
+          dropdown.classList.add('hidden');
+        });
+        dropdown.appendChild(suggestion);
+      });
+      dropdown.classList.remove('hidden');
+    }
+
+    pickupInput.addEventListener('input', () => handleInput(pickupInput, pickupDropdown));
+    dropInput.addEventListener('input', () => handleInput(dropInput, dropDropdown));
+
+    document.addEventListener('click', (e) => {
+      if (!pickupInput.contains(e.target)) pickupDropdown.classList.add('hidden');
+      if (!dropInput.contains(e.target)) dropDropdown.classList.add('hidden');
+    });
+
+    async function getCoordinates(location) {
+      const response = await fetch(`${LOCATIONIQ_API_URL}/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(location)}&format=json&limit=1`);
+      const data = await response.json();
+      return {
+        lat: parseFloat(data[0].lat),
+        lon: parseFloat(data[0].lon)
+      };
+    }
+
+    async function getDistance(startCoords, endCoords) {
+      const response = await fetch(`${LOCATIONIQ_API_URL}/directions/driving/${startCoords.lon},${startCoords.lat};${endCoords.lon},${endCoords.lat}?key=${LOCATIONIQ_API_KEY}&overview=false`);
+      const data = await response.json();
+      return data.routes[0].distance / 1000; // km
+    }
+
+    async function bookRide() {
+      const pickup = pickupInput.value.trim();
+      const drop = dropInput.value.trim();
+
+      if (!pickup || !drop) {
+        alert("Please fill in both pickup and drop locations.");
+        return;
+      }
+
+      try {
+        rideInfo.textContent = 'Calculating route...';
+        const startCoords = await getCoordinates(pickup);
+        const endCoords = await getCoordinates(drop);
+        const distanceKm = await getDistance(startCoords, endCoords);
+
+        const fare = (distanceKm * 12).toFixed(2); // ₹12/km fare
+
+        rideInfo.innerHTML = `
+          Distance: ${distanceKm.toFixed(2)} km<br>
+          Estimated Fare: ₹${fare}<br>
+          ✅ Your ride is booked!
+        `;
+      } catch (err) {
+        console.error(err);
+        rideInfo.textContent = 'Error calculating route. Please try again.';
+      }
+    }
+  </script>
+</body>
+</html>

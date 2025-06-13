@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoRide - Electric Vehicle Booking</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background leaves */
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            border-radius: 0 100% 0 100%;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .leaf:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .leaf:nth-child(2) { top: 20%; left: 80%; animation-delay: 1s; }
+        .leaf:nth-child(3) { top: 60%; left: 5%; animation-delay: 2s; }
+        .leaf:nth-child(4) { top: 80%; left: 90%; animation-delay: 3s; }
+        .leaf:nth-child(5) { top: 40%; left: 70%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Map Section */
+        .map-section {
+            flex: 0.6;
+            position: relative;
+            background: linear-gradient(45deg, #2E7D32, #388E3C);
+            border-radius: 0 20px 20px 0;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            border-radius: 0 20px 20px 0;
+        }
+
+        /* Booking Panel */
+        .booking-panel {
+            flex: 0.4;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px 0 0 20px;
+            padding: 20px;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            max-width: 450px;
+        }
+
+        .booking-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
+            border-radius: 20px 0 0 0;
+            z-index: -1;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2E7D32;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2E7D32;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+
+        .location-inputs {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #E8F5E8;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: #4CAF50;
+            border-radius: 50%;
+        }
+
+        .pickup-icon {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+        }
+
+        .destination-icon {
+            background: linear-gradient(135deg, #FF5722, #FF7043);
+        }
+
+        .route-info {
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #2E7D32;
+            display: none;
+        }
+
+        .route-info.show {
+            display: block;
+        }
+
+        .vehicle-options {
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .vehicle-card {
+            padding: 12px 8px;
+            border: 2px solid #E8F5E8;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            position: relative;
+            overflow: hidden;
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .vehicle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .vehicle-card:hover::before {
+            left: 100%;
+        }
+
+        .vehicle-card:hover {
+            border-color: #4CAF50;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2);
+        }
+
+        .vehicle-card.selected {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .vehicle-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .vehicle-name {
+            font-weight: 500;
+            color: #2E7D32;
+            margin-bottom: 2px;
+            font-size: 12px;
+        }
+
+        .vehicle-price {
+            font-size: 11px;
+            color: #66BB6A;
+            font-weight: 500;
+        }
+
+        .book-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .book-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .book-button:hover::before {
+            left: 100%;
+        }
+
+        .book-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .book-button:active {
+            transform: translateY(0);
+        }
+
+        .book-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .booking-panel {
+                height: 55vh;
+                border-radius: 20px 20px 0 0;
+                order: 2;
+                max-width: none;
+                flex: none;
+            }
+            
+            .map-section {
+                height: 45vh;
+                border-radius: 0 0 20px 20px;
+                order: 1;
+                flex: none;
+            }
+            
+            #map {
+                border-radius: 0 0 20px 20px;
+            }
+
+            .vehicle-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .vehicle-card {
+                min-height: 75px;
+                padding: 8px 6px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(76, 175, 80, 0.3);
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #E8F5E8;
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background leaves -->
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+
+    <div class="container">
+        <!-- Map Section -->
+        <div class="map-section">
+            <div id="map"></div>
+        </div>
+
+        <!-- Booking Panel -->
+        <div class="booking-panel">
+            <div class="logo">
+                <div class="logo-icon">🚗</div>
+                <div class="logo-text">EcoRide</div>
+            </div>
+
+            <div class="section-title">Where to?</div>
+            
+            <div class="location-inputs">
+                <div class="input-group">
+                    <input type="text" id="pickup" placeholder="Pickup location" value="Koramangala, Bengaluru">
+                    <div class="input-icon pickup-icon"></div>
+                    <div class="suggestions" id="pickup-suggestions"></div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="destination" placeholder="Where are you going?">
+                    <div class="input-icon destination-icon"></div>
+                    <div class="suggestions" id="destination-suggestions"></div>
+                </div>
+            </div>
+
+            <div class="route-info" id="routeInfo">
+                <div><strong>Distance:</strong> <span id="distance">-</span></div>
+                <div><strong>Duration:</strong> <span id="duration">-</span></div>
+            </div>
+
+            <div class="section-title">Choose your EV</div>
+            
+            <div class="vehicle-options">
+                <div class="vehicle-grid">
+                    <div class="vehicle-card" data-vehicle="bike" data-rate="8">
+                        <div class="vehicle-icon">🏍️</div>
+                        <div class="vehicle-name">EcoBike</div>
+                        <div class="vehicle-price">₹8/km</div>
+                    </div>
+                    <div class="vehicle-card" data-vehicle="auto" data-rate="12">
+                        <div class="vehicle-icon">🛺</div>
+                        <div class="vehicle-name">EcoAuto</div>
+                        <div class="vehicle-price">₹12/km</div>
+                    </div>
+                    <div class="vehicle-card" data-vehicle="eco" data-rate="15">
+                        <div class="vehicle-icon">🚗</div>
+                        <div class="vehicle-name">EcoBasic</div>
+                        <div class="vehicle-price">₹15/km</div>
+                    </div>
+                    <div class="vehicle-card selected" data-vehicle="comfort" data-rate="20">
+                        <div class="vehicle-icon">🚙</div>
+                        <div class="vehicle-name">EcoComfort</div>
+                        <div class="vehicle-price">₹20/km</div>
+                    </div>
+                    <div class="vehicle-card" data-vehicle="premium" data-rate="25">
+                        <div class="vehicle-icon">🚐</div>
+                        <div class="vehicle-name">EcoPremium</div>
+                        <div class="vehicle-price">₹25/km</div>
+                    </div>
+                    <div class="vehicle-card" data-vehicle="xl" data-rate="30">
+                        <div class="vehicle-icon">🚌</div>
+                        <div class="vehicle-name">EcoXL</div>
+                        <div class="vehicle-price">₹30/km</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="book-button" onclick="bookRide()" id="bookButton">
+                Book EcoRide
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">✓</div>
+            <h2 style="color: #2E7D32; margin-bottom: 15px;">Ride Booked Successfully!</h2>
+            <p style="color: #666; margin-bottom: 20px;">Your EcoRide will arrive in 5 minutes</p>
+            <p style="color: #666; margin-bottom: 25px;" id="rideDetails">
+                Driver: Rajesh Kumar<br>
+                Vehicle: Tesla Model 3<br>
+                Number: KA-01-HH-1234<br>
+                <strong>Total Fare: <span id="totalFare">₹0</span></strong>
+            </p>
+            <button style="background: linear-gradient(135deg, #4CAF50, #8BC34A); color: white; border: none; padding: 12px 30px; border-radius: 10px; cursor: pointer; font-family: 'Poppins', sans-serif;" onclick="closeModal()">Track Ride</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        const LOCATIONIQ_API_KEY = 'pk.ace5c9ce9975451c9ec861c0c0873d3a';
+        const LOCATIONIQ_API_URL = 'https://us1.locationiq.com/v1';
+
+        let map;
+        let pickupMarker;
+        let destinationMarker;
+        let routeControl;
+        let selectedVehicle = 'comfort';
+        let currentDistance = 0;
+        let pickupCoords = null;
+        let destinationCoords = null;
+
+        // Initialize map
+        function initMap() {
+            // Initialize map centered on Bengaluru
+            map = L.map('map').setView([12.9716, 77.5946], 13);
+
+            // Add LocationIQ tile layer
+            L.tileLayer(`https://{s}-tiles.locationiq.com/v3/streets/r/{z}/{x}/{y}.png?key=${LOCATIONIQ_API_KEY}`, {
+                attribution: '&copy; <a href="https://locationiq.com/">LocationIQ</a>',
+                maxZoom: 18,
+                id: 'locationiq.streets'
+            }).addTo(map);
+
+            // Add some sample EV markers
+            addEVMarkers();
+
+            // Set default pickup location
+            geocodeAddress('Koramangala, Bengaluru', true);
+        }
+
+        function addEVMarkers() {
+            const evLocations = [
+                { lat: 12.9716, lng: 77.5946, type: 'available' },
+                { lat: 12.9756, lng: 77.6006, type: 'available' },
+                { lat: 12.9676, lng: 77.5886, type: 'available' },
+                { lat: 12.9836, lng: 77.6086, type: 'busy' }
+            ];
+
+            evLocations.forEach(location => {
+                const color = location.type === 'available' ? '#4CAF50' : '#FFC107';
+                const marker = L.circleMarker([location.lat, location.lng], {
+                    color: 'white',
+                    fillColor: color,
+                    fillOpacity: 0.8,
+                    radius: 8,
+                    weight: 2
+                }).addTo(map);
+
+                marker.bindPopup(`${location.type === 'available' ? 'Available' : 'Busy'} EV`);
+            });
+        }
+
+        // Geocoding function
+        async function geocodeAddress(address, isPickup = false) {
+            try {
+                const response = await fetch(`${LOCATIONIQ_API_URL}/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json&limit=1`);
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+                    
+                    if (isPickup) {
+                        pickupCoords = coords;
+                        if (pickupMarker) map.removeLayer(pickupMarker);
+                        pickupMarker = L.marker(coords, {
+                            icon: L.divIcon({
+                                html: '<div style="background: #4CAF50; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white;"></div>',
+                                iconSize: [20, 20],
+                                className: 'pickup-marker'
+                            })
+                        }).addTo(map);
+                        pickupMarker.bindPopup('Pickup Location');
+                    } else {
+                        destinationCoords = coords;
+                        if (destinationMarker) map.removeLayer(destinationMarker);
+                        destinationMarker = L.marker(coords, {
+                            icon: L.divIcon({
+                                html: '<div style="background: #FF5722; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white;"></div>',
+                                iconSize: [20, 20],
+                                className: 'destination-marker'
+                            })
+                        }).addTo(map);
+                        destinationMarker.bindPopup('Destination');
+                    }
+                    
+                    if (pickupCoords && destinationCoords) {
+                        calculateRoute();
+                    }
+                    
+                    return coords;
+                }
+            } catch (error) {
+                console.error('Geocoding error:', error);
+            }
+            return null;
+        }
+
+        // Get route and calculate distance
+        async function calculateRoute() {
+            if (!pickupCoords || !destinationCoords) return;
+
+            try {
+                const response = await fetch(`${LOCATIONIQ_API_URL}/directions/driving/${pickupCoords[1]},${pickupCoords[0]};${destinationCoords[1]},${destinationCoords[0]}?key=${LOCATIONIQ_API_KEY}&steps=true&geometries=geojson`);
+                const data = await response.json();
+                
+                if (data.routes && data.routes.length > 0) {
+                    const route = data.routes[0];
+                    const distance = (route.distance / 1000).toFixed(1); // Convert to km
+                    const duration = Math.round(route.duration / 60); // Convert to minutes
+                    
+                    currentDistance = parseFloat(distance);
+                    
+                    // Update route info
+                    document.getElementById('distance').textContent = `${distance} km`;
+                    document.getElementById('duration').textContent = `${duration} min`;
+                    document.getElementById('routeInfo').classList.add('show');
+                    
+                    // Update vehicle prices
+                    updateVehiclePrices();
+                    
+                    // Draw route on map
+                    if (routeControl) {
+                        map.removeLayer(routeControl);
+                    }
+                    
+                    const routeCoords = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+                    routeControl = L.polyline(routeCoords, {
+                        color: '#4CAF50',
+                        weight: 4,
+                        opacity: 0.8
+                    }).addTo(map);
+                    
+                    // Fit map to show both markers and route
+                    const group = new L.featureGroup([pickupMarker, destinationMarker, routeControl]);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+            } catch (error) {
+                console.error('Routing error:', error);
+            }
+        }
+
+        // Search suggestions
+        async function getAddressSuggestions(query, isPickup = false) {
+            if (query.length < 3) return [];
+            
+            try {
+                const response = await fetch(`${LOCATIONIQ_API_URL}/autocomplete.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`);
+                const data = await response.json();
+                return data || [];
+            } catch (error) {
+                console.error('Autocomplete error:', error);
+                return [];
+            }
+        }
+
+        // Show suggestions
+        async function showSuggestions(input, suggestionsDiv, isPickup = false) {
+            const query = input.value.trim();
+            const suggestions = await getAddressSuggestions(query, isPickup);
+            
+            suggestionsDiv.innerHTML = '';
+            
+            if (suggestions.length > 0) {
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.textContent = suggestion.display_name;
+                    div.onclick = () => {
+                        input.value = suggestion.display_name;
+                        suggestionsDiv.style.display = 'none';
+                        geocodeAddress(suggestion.display_name, isPickup);
+                    };
+                    suggestionsDiv.appendChild(div);
+                });
+                suggestionsDiv.style.display = 'block';
+            } else {
+                suggestionsDiv.style.display = 'none';
+            }
+        }
+
+        // Update vehicle prices based on distance
+        function updateVehiclePrices() {
+            document.querySelectorAll('.vehicle-card').forEach(card => {
+                const rate = parseFloat(card.dataset.rate);
+                const price = Math.round(currentDistance * rate);
+                const priceElement = card.querySelector('.vehicle-price');
+                priceElement.textContent = `₹${price}`;
+                card.dataset.price = price;
+            });
+        }
+
+        // Event listeners
+        document.getElementById('pickup').addEventListener('input', function() {
+            showSuggestions(this, document.getElementById('pickup-suggestions'), true);
+        });
+
+        document.getElementById('destination').addEventListener('input', function() {
+            showSuggestions(this, document.getElementById('destination-suggestions'), false);
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.input-group')) {
+                document.querySelectorAll('.suggestions').forEach(s => s.style.display = 'none');
+            }
+        });
+
+        // Vehicle selection
+        document.querySelectorAll('.vehicle-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedVehicle = this.dataset.vehicle;
+                
+                // Animate selection
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        function bookRide() {
+            const pickup = document.getElementById('pickup').value.trim();
+            const destination = document.getElementById('destination').value.trim();
+            
+            if (!pickup || !destination) {
+                alert('Please enter both pickup and destination locations');
+                return;
+            }
+            
+            if (currentDistance === 0) {
+                alert('Please wait for route calculation to complete');
+                return;
+            }
+
+            const selectedCard = document.querySelector('.vehicle-card.selected');
+            const fare = selectedCard.dataset.price;
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'flex';
+
+            // Simulate booking process
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('totalFare').textContent = `₹${fare}`;
+                document.getElementById('successModal').style.display = 'flex';
+            }, 2000);
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+            // Reset form
+            document.getElementById('destination').value = '';
+            document.getElementById('routeInfo').classList.remove('show');
+            currentDistance = 0;
+            
+            if (destinationMarker) {
+                map.removeLayer(destinationMarker);
+                destinationMarker = null;
+            }
+            if (routeControl) {
+                map.removeLayer(routeControl);
+                routeControl = null;
+            }
+            
+            // Reset vehicle prices to per km rates
+            document.querySelectorAll('.vehicle-card').forEach(card => {
+                const rate = parseFloat(card.dataset.rate);
+                const priceElement = card.querySelector('.vehicle-price');
+                priceElement.textContent = `₹${rate}/km`;
+            });
+        }
+
+        // Initialize map when page loads
+        window.onload = function() {
+            initMap();
+        };
+    </script>
+</body>

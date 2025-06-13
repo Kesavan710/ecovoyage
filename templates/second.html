@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Emission Tracker</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #2196F3;
+            --dark: #333;
+            --light: #f5f5f5;
+            --warning: #FF9800;
+            --danger: #F44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-card {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary), #8BC34A);
+            color: white;
+        }
+        
+        .transportation-card {
+            grid-column: span 6;
+        }
+        
+        .goals-card {
+            grid-column: span 3;
+        }
+        
+        .leaderboard-card {
+            grid-column: span 3;
+        }
+        
+        .actions-card {
+            grid-column: span 12;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 65%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .emission-source {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        
+        .source-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .source-progress {
+            height: 100%;
+            background-color: var(--secondary);
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .trend {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+        
+        .trend.up {
+            color: var(--danger);
+        }
+        
+        .trend.down {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                grid-column: span 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard">
+            <!-- Section 1: Welcome & Summary -->
+            <div class="card welcome-card">
+                <h1>Welcome back, User!</h1>
+                <div class="summary">
+                    <h2>Your Carbon Footprint</h2>
+                    <p>You've emitted <strong>2.4 tons CO₂e</strong> this month.</p>
+                    <p>You're <strong>15% below</strong> the national average. Great job!</p>
+                    <p>Trend: <span class="trend down">📉 Down 5% from last month</span></p>
+                </div>
+            </div>
+            
+            <!-- Section 2: Transportation Metrics -->
+            <div class="card transportation-card">
+                <h2>Transportation Emissions</h2>
+                <p>1.2 tons CO₂e (45% of your total)</p>
+                
+                <div class="emission-sources">
+                    <div class="emission-source">
+                        <span>Car trips</span>
+                        <span>0.54 tons (45%)</span>
+                    </div>
+                    <div class="source-bar">
+                        <div class="source-progress" style="width: 45%"></div>
+                    </div>
+                    
+                    <div class="emission-source">
+                        <span>Flights</span>
+                        <span>0.5 tons (42%)</span>
+                    </div>
+                    <div class="source-bar">
+                        <div class="source-progress" style="width: 42%"></div>
+                    </div>
+                    
+                    <div class="emission-source">
+                        <span>Public transport</span>
+                        <span>0.16 tons (13%)</span>
+                    </div>
+                    <div class="source-bar">
+                        <div class="source-progress" style="width: 13%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 4: Goals & Progress -->
+            <div class="card goals-card">
+                <h2>Your Goals</h2>
+                <p>Reduce emissions by 10% by June 2024</p>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <p>65% completed</p>
+                
+                <h3>Suggested Actions</h3>
+                <ul>
+                    <li>Switch to public transport 2x/week</li>
+                    <li>Try Meatless Mondays</li>
+                </ul>
+            </div>
+            
+            <!-- Section 5: Leaderboard -->
+            <div class="card leaderboard-card">
+                <h2>Leaderboard</h2>
+                <p>You're in the top 20% of eco-friendly users!</p>
+                
+                <div class="leaderboard">
+                    <div class="leaderboard-item">
+                        <span>1. EcoWarrior42</span>
+                        <span>-75%</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>2. GreenThumb</span>
+                        <span>-68%</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>3. You</span>
+                        <span>-15%</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>4. CarLover</span>
+                        <span>+22%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 6: Quick Actions -->
+            <div class="card actions-card">
+                <a href="dashboard"><button class="btn btn-primary">➕ Log New Activity</button></a>
+                <a href="progress"><button class="btn btn-secondary">📊 View Reports</button></a>
+                <a href="tips"><button class="btn btn-primary">🌱 Challenges</button></a>
+                <a href="reward"><button class="btn btn-secondary">🏆 Check Rewards</button></a>
+                <a href="tipss"><button class="btn btn-primary">🌱 tips</button></a>
+                <a href="evbook"><button class="btn btn-primary">🌱 booking ev</button></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // You can add dynamic functionality here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Example: Animate progress bars on load
+            const progressBars = document.querySelectorAll('.progress, .source-progress');
+            
+            progressBars.forEach(bar => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, 100);
+            });
+            
+            // Button click handlers
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    
+                });
+            });
+        });
+    </script>
+</body>
+</html>

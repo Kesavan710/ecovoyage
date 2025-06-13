@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport Emissions Report | Carbon Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --primary-dark: #388E3C;
+            --secondary: #2196F3;
+            --accent: #FFC107;
+            --dark: #263238;
+            --light: #ECEFF1;
+            --text: #37474F;
+            --text-light: #607D8B;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --card-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-weight: 700;
+            font-size: 24px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .time-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            background: white;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .time-btn.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .time-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-subtext {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .trend {
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 50px;
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary-dark);
+        }
+
+        .trend.up {
+            background: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        .trend i {
+            margin-right: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .summary-card {
+            grid-column: span 4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .daily-card {
+            grid-column: span 8;
+        }
+
+        .monthly-card, .yearly-card {
+            grid-column: span 6;
+        }
+
+        .transport-breakdown {
+            grid-column: span 12;
+        }
+
+        .source-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .source-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .source-info {
+            flex: 1;
+        }
+
+        .source-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .source-stats {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            width: 100%;
+            background: var(--light);
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .goal-progress-bar {
+            height: 12px;
+            background: var(--light);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .goal-progress-fill.low {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+        }
+
+        .goal-progress-fill.medium {
+            background: linear-gradient(to right, var(--accent), #FFD54F);
+        }
+
+        .goal-progress-fill.high {
+            background: linear-gradient(to right, #F44336, #FF7043);
+        }
+
+        .transport-key {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .key-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 10px;
+        }
+
+        .key-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .emission-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+            display: inline-block;
+        }
+
+        .emission-low { background: var(--primary); }
+        .emission-medium { background: var(--accent); }
+        .emission-high { background: #F44336; }
+
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .summary-card, .daily-card,
+            .monthly-card, .yearly-card,
+            .transport-breakdown {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-card, .daily-card, 
+            .monthly-card, .yearly-card,
+            .transport-breakdown {
+                grid-column: span 1;
+            }
+            
+            .time-filter {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i>🌱</i>
+                <h1>CarbonTrack</h1>
+            </div>
+            <div class="time-filter">
+                <button class="time-btn active" data-period="week">This Week</button>
+                <button class="time-btn" data-period="month">This Month</button>
+                <button class="time-btn" data-period="year">This Year</button>
+                <button class="time-btn" data-period="all">All Time</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Summary Card -->
+            <div class="card summary-card">
+                <div class="card-header">
+                    <div class="card-title">Transport Summary</div>
+                    <div class="trend" id="summary-trend">
+                        <i>📊</i> Loading...
+                    </div>
+                </div>
+                <div class="card-value" id="total-emissions">Loading...</div>
+                <div class="card-subtext" id="summary-period">CO₂ from transport this week</div>
+                
+                <div style="flex: 1;"></div>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span id="goal-label">Weekly Goal (25 kg)</span>
+                        <span id="goal-percentage">0%</span>
+                    </div>
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill low" id="goal-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Transport Card -->
+            <div class="card daily-card">
+                <div class="card-header">
+                    <div class="card-title">Daily Transport Emissions</div>
+                    <div class="trend" id="daily-trend">
+                        <i>📊</i> Loading...
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly Transport Card -->
+            <div class="card monthly-card">
+                <div class="card-header">
+                    <div class="card-title">Monthly Transport Trends</div>
+                    <div class="trend" id="monthly-trend">
+                        <i>📊</i> Loading...
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Yearly Transport Card -->
+            <div class="card yearly-card">
+                <div class="card-header">
+                    <div class="card-title">Yearly Transport Comparison</div>
+                    <div class="trend" id="yearly-trend">
+                        <i>📊</i> Loading...
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="yearlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Transport Breakdown -->
+            <div class="card transport-breakdown">
+                <div class="card-header">
+                    <div class="card-title">Transportation Breakdown (kg CO₂)</div>
+                    <div class="trend" id="breakdown-trend">
+                        <i>📊</i> Loading...
+                    </div>
+                </div>
+                
+                <div id="transport-breakdown-content">
+                    <div class="loading">Loading transport data...</div>
+                </div>
+
+                <div class="transport-key">
+                    <div class="key-item">
+                        <div class="key-color" style="background: #4CAF50;"></div>
+                        <span>Low Emission (0-1 kg)</span>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-color" style="background: #FFC107;"></div>
+                        <span>Medium Emission (1-5 kg)</span>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-color" style="background: #F44336;"></div>
+                        <span>High Emission (5+ kg)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:8000';
+        const EMISSION_GOALS = {
+            week: 25,
+            month: 100,
+            year: 1200,
+            all: 5000
+        };
+
+        // Transport mode icons and names
+        const TRANSPORT_CONFIG = {
+            car: { icon: '🚗', name: 'Car (Petrol)' },
+            bus: { icon: '🚌', name: 'Bus' },
+            train: { icon: '🚆', name: 'Train' },
+            airplane: { icon: '✈️', name: 'Airplane' },
+            motorcycle: { icon: '🏍️', name: 'Motorcycle' },
+            bicycle: { icon: '🚲', name: 'Bicycle' },
+            walking: { icon: '🚶', name: 'Walking' }
+        };
+
+        // Global variables
+        let currentPeriod = 'week';
+        let transportData = {};
+        let charts = {};
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            loadDashboardData();
+        });
+
+        function initializeEventListeners() {
+            // Time period filter
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPeriod = this.dataset.period;
+                    loadDashboardData();
+                });
+            });
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Use sample data for demonstration
+                transportData = generateSampleData();
+                
+                updateSummaryCard();
+                updateTransportBreakdown();
+                updateCharts();
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showError('Failed to load transport data');
+            }
+        }
+
+        function generateSampleData() {
+            return {
+                week: {
+                    total: 18.6,
+                    byTransport: { car: 8.2, airplane: 5.1, bus: 2.3, train: 1.5, motorcycle: 0.8, bicycle: 0.4, walking: 0.3 },
+                    daily: [4.2, 3.8, 4.1, 3.9, 4.5, 5.1, 4.3],
+                    trend: -8
+                },
+                month: {
+                    total: 67.9,
+                    byTransport: { car: 32.8, airplane: 15.3, bus: 9.2, train: 6.0, motorcycle: 3.2, bicycle: 1.6, walking: 1.2 },
+                    weekly: [18.2, 17.5, 16.8, 15.4],
+                    trend: -12
+                },
+                year: {
+                    total: 786.4,
+                    byTransport: { car: 350.2, airplane: 196.6, bus: 110.5, train: 70.8, motorcycle: 39.3, bicycle: 15.7, walking: 11.8 },
+                    monthly: [85, 78, 72, 68, 65, 62, 66, 60, 58, 55, 59, 56],
+                    trend: -18
+                },
+                all: {
+                    total: 1523.8,
+                    byTransport: { car: 680.4, airplane: 381.2, bus: 228.6, train: 137.1, motorcycle: 76.4, bicycle: 30.5, walking: 22.9 },
+                    yearly: [1523.8, 1234.5, 1098.7],
+                    trend: -5
+                }
+            };
+        }
+
+        function updateSummaryCard() {
+            const data = transportData[currentPeriod];
+            const totalEmissions = data.total;
+            const goal = EMISSION_GOALS[currentPeriod];
+            const percentage = Math.min((totalEmissions / goal) * 100, 100);
+            
+            // Update values
+            document.getElementById('total-emissions').textContent = `${totalEmissions.toFixed(1)} kg`;
+            document.getElementById('summary-period').textContent = `CO₂ from transport this ${currentPeriod}`;
+            document.getElementById('goal-percentage').textContent = `${percentage.toFixed(0)}%`;
+            document.getElementById('goal-label').textContent = `${capitalizeFirst(currentPeriod)} Goal (${goal} kg)`;
+            
+            // Update progress bar with animation
+            const progressFill = document.getElementById('goal-progress');
+            setTimeout(() => {
+                progressFill.style.width = `${percentage}%`;
+            }, 100);
+            
+            // Update progress bar color based on percentage
+            progressFill.className = 'goal-progress-fill';
+            if (percentage <= 50) {
+                progressFill.classList.add('low');
+            } else if (percentage <= 80) {
+                progressFill.classList.add('medium');
+            } else {
+                progressFill.classList.add('high');
+            }
+            
+            // Update trend
+            const trend = data.trend || 0;
+            const trendElement = document.getElementById('summary-trend');
+            trendElement.innerHTML = `<i>${trend < 0 ? '📉' : '📈'}</i> ${Math.abs(trend)}% ${trend < 0 ? 'decrease' : 'increase'}`;
+            trendElement.className = `trend ${trend >= 0 ? 'up' : ''}`;
+        }
+
+        function updateTransportBreakdown() {
+            const data = transportData[currentPeriod];
+            const total = data.total;
+            const breakdown = data.byTransport;
+            
+            const breakdownContent = document.getElementById('transport-breakdown-content');
+            breakdownContent.innerHTML = '';
+            
+            // Sort by emission amount
+            const sortedTransports = Object.entries(breakdown)
+                .sort(([,a], [,b]) => b - a)
+                .filter(([,emission]) => emission > 0);
+            
+            if (sortedTransports.length === 0) {
+                breakdownContent.innerHTML = '<div class="loading">No transport data available for this period</div>';
+                return;
+            }
+            
+            // Find the maximum emission for scaling progress bars
+            const maxEmission = Math.max(...sortedTransports.map(([,emission]) => emission));
+            
+            sortedTransports.forEach(([transport, emission]) => {
+                const percentage = total > 0 ? (emission / total) * 100 : 0;
+                const relativePercentage = maxEmission > 0 ? (emission / maxEmission) * 100 : 0;
+                const config = TRANSPORT_CONFIG[transport] || { icon: '🚗', name: transport };
+                
+                // Determine emission level for color coding
+                let emissionClass = 'emission-low';
+                if (emission > 5) emissionClass = 'emission-high';
+                else if (emission > 1) emissionClass = 'emission-medium';
+                
+                const sourceItem = document.createElement('div');
+                sourceItem.className = 'source-item';
+                sourceItem.innerHTML = `
+                    <div class="source-icon">${config.icon}</div>
+                    <div class="source-info">
+                        <div class="source-name">
+                            ${config.name}
+                            <span class="emission-indicator ${emissionClass}"></span>
+                        </div>
+                        <div class="source-stats">
+                            <span>${emission.toFixed(1)} kg CO₂</span>
+                            <span>${percentage.toFixed(0)}% of total</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" data-width="${relativePercentage}"></div>
+                        </div>
+                    </div>
+                `;
+                breakdownContent.appendChild(sourceItem);
+                
+                // Animate progress bar
+                const progressBar = sourceItem.querySelector('.progress-fill');
+                setTimeout(() => {
+                    progressBar.style.width = `${relativePercentage}%`;
+                }, 100 + sortedTransports.indexOf([transport, emission]) * 100);
+            });
+        }
+
+        function updateCharts() {
+            const data = transportData[currentPeriod];
+            
+            // Initialize charts if not already done
+            if (!charts.daily) {
+                initializeCharts();
+            }
+            
+            // Update daily chart
+            const dailyLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            charts.daily.data.labels = dailyLabels;
+            charts.daily.data.datasets[0].data = data.daily || Array(7).fill(0);
+            charts.daily.update('active');
+            
+            // Update monthly chart
+            if (currentPeriod === 'month') {
+                charts.monthly.data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                charts.monthly.data.datasets[0].data = data.weekly || Array(4).fill(0);
+            } else {
+                charts.monthly.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                charts.monthly.data.datasets[0].data = data.monthly || Array(12).fill(0);
+            }
+            charts.monthly.update('active');
+            
+            // Update yearly chart
+            const currentYear = new Date().getFullYear();
+            const yearLabels = [currentYear - 2, currentYear - 1, currentYear].map(y => y.toString());
+            charts.yearly.data.labels = yearLabels;
+            charts.yearly.data.datasets[0].data = data.yearly || Array(3).fill(0);
+            charts.yearly.update('active');
+        }
+
+        function initializeCharts() {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'Montserrat', size: 14, weight: '600' },
+                        bodyFont: { family: 'Montserrat', size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.parsed.y.toFixed(1)} kg CO₂`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#607D8B' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: {
+                            color: '#607D8B',
+                            callback: function(value) {
+                                return value.toFixed(1) + ' kg';
+                            }
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 5,
+                        backgroundColor: '#4CAF50',
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverRadius: 7
+                    },
+                    line: {
+                        tension: 0.3,
+                        borderWidth: 3,
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        fill: true
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutQuart'
+                }
+            };
+
+            // Daily chart
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            charts.daily = new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        ...chartOptions.elements.line
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Monthly chart
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            charts.monthly = new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        data: Array(12).fill(0),
+                        backgroundColor: 'rgba(33, 150, 243, 0.7)',
+                        borderColor: 'rgba(33, 150, 243, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    elements: {
+                        bar: {
+                            borderRadius: 4
+                        }
+                    }
+                }
+            });
+
+            // Yearly chart
+            const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
+            charts.yearly = new Chart(yearlyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['2023', '2024', '2025'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.8)',
+                            'rgba(33, 150, 243, 0.8)',
+                            'rgba(255, 193, 7, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(76, 175, 80, 1)',
+                            'rgba(33, 150, 243, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Montserrat', size: 12 },
+                                padding: 20,
+                                color: '#607D8B'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: { family: 'Montserrat', size: 14, weight: '600' },
+                            bodyFont: { family: 'Montserrat', size: 12 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.parsed.toFixed(1)} kg CO₂`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.container').insertBefore(errorDiv, document.querySelector('.dashboard'));
+            
+              setTimeout(() => {
+                if (errorDiv && errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Tips | Carbon Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --primary-dark: #388E3C;
+            --secondary: #2196F3;
+            --accent: #FFC107;
+            --dark: #263238;
+            --light: #ECEFF1;
+            --text: #37474F;
+            --text-light: #607D8B;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --card-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-weight: 700;
+            font-size: 24px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            background: white;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .tip-card {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .tip-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .tip-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+        }
+
+        .tip-category {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tip-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tip-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .tip-description {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .tip-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .tip-impact {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .tip-save {
+            background: var(--light);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tip-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            border-top: 1px solid var(--light);
+            padding-top: 15px;
+        }
+
+        .tip-btn {
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .tip-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tip-btn-secondary {
+            background: var(--light);
+            color: var(--text-light);
+        }
+
+        .tip-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .difficulty {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .difficulty-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .difficulty-stars {
+            color: var(--accent);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-filter {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i>🌱</i>
+                <h1>CarbonTrack</h1>
+            </div>
+            <div>
+                <button class="tip-btn tip-btn-secondary">
+                    <i class="fas fa-leaf"></i> My Saved Tips
+                </button>
+            </div>
+        </header>
+
+        <div class="category-filter">
+            <button class="category-btn active" data-category="all">
+                <i class="fas fa-star"></i> All Tips
+            </button>
+            <button class="category-btn" data-category="transport">
+                <i class="fas fa-car"></i> Transport
+            </button>
+            <button class="category-btn" data-category="home">
+                <i class="fas fa-home"></i> Home
+            </button>
+            <button class="category-btn" data-category="food">
+                <i class="fas fa-utensils"></i> Food
+            </button>
+            <button class="category-btn" data-category="shopping">
+                <i class="fas fa-shopping-bag"></i> Shopping
+            </button>
+        </div>
+
+        <div class="tips-grid">
+            <!-- Transport Tip 1 -->
+            <div class="tip-card" data-category="transport">
+                <div class="tip-image" style="background-image: url('https://images.unsplash.com/photo-1509822929063-6b6cfc9b42f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <span class="tip-category"><i class="fas fa-car"></i> Transport</span>
+                </div>
+                <div class="tip-content">
+                    <h3 class="tip-title">Try Public Transport Twice a Week</h3>
+                    <div class="difficulty">
+                        <span class="difficulty-label">Difficulty:</span>
+                        <span class="difficulty-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </span>
+                    </div>
+                    <p class="tip-description">Switching from driving to public transport just two days a week can reduce your carbon footprint by about 1,600 kg annually.</p>
+                    <div class="tip-stats">
+                        <span class="tip-impact"><i class="fas fa-bolt"></i> Saves ~1,600 kg/year</span>
+                        <span class="tip-save">87% of users saved</span>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="tip-btn tip-btn-secondary">
+                            <i class="far fa-bookmark"></i> Save
+                        </button>
+                        <button class="tip-btn tip-btn-primary">
+                            <i class="fas fa-plus"></i> Start Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Tip 1 -->
+            <div class="tip-card" data-category="home">
+                <div class="tip-image" style="background-image: url('https://images.unsplash.com/photo-1558002038-1055907df827?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <span class="tip-category"><i class="fas fa-home"></i> Home</span>
+                </div>
+                <div class="tip-content">
+                    <h3 class="tip-title">Lower Thermostat by 1°C in Winter</h3>
+                    <div class="difficulty">
+                        <span class="difficulty-label">Difficulty:</span>
+                        <span class="difficulty-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </span>
+                    </div>
+                    <p class="tip-description">Reducing your heating by just 1 degree can save about 300 kg of CO₂ annually while still keeping your home comfortable.</p>
+                    <div class="tip-stats">
+                        <span class="tip-impact"><i class="fas fa-bolt"></i> Saves ~300 kg/year</span>
+                        <span class="tip-save">92% of users saved</span>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="tip-btn tip-btn-secondary">
+                            <i class="far fa-bookmark"></i> Save
+                        </button>
+                        <button class="tip-btn tip-btn-primary">
+                            <i class="fas fa-plus"></i> Start Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Tip 1 -->
+            <div class="tip-card" data-category="food">
+                <div class="tip-image" style="background-image: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <span class="tip-category"><i class="fas fa-utensils"></i> Food</span>
+                </div>
+                <div class="tip-content">
+                    <h3 class="tip-title">Meatless Mondays</h3>
+                    <div class="difficulty">
+                        <span class="difficulty-label">Difficulty:</span>
+                        <span class="difficulty-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </span>
+                    </div>
+                    <p class="tip-description">Going meat-free one day a week can reduce your carbon footprint by about 230 kg annually. Try delicious plant-based recipes!</p>
+                    <div class="tip-stats">
+                        <span class="tip-impact"><i class="fas fa-bolt"></i> Saves ~230 kg/year</span>
+                        <span class="tip-save">78% of users saved</span>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="tip-btn tip-btn-secondary">
+                            <i class="far fa-bookmark"></i> Save
+                        </button>
+                        <button class="tip-btn tip-btn-primary">
+                            <i class="fas fa-plus"></i> Start Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transport Tip 2 -->
+            <div class="tip-card" data-category="transport">
+                <div class="tip-image" style="background-image: url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <span class="tip-category"><i class="fas fa-car"></i> Transport</span>
+                </div>
+                <div class="tip-content">
+                    <h3 class="tip-title">Bike to Work Once a Week</h3>
+                    <div class="difficulty">
+                        <span class="difficulty-label">Difficulty:</span>
+                        <span class="difficulty-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </span>
+                    </div>
+                    <p class="tip-description">Cycling just one work day each week can save about 400 kg of CO₂ annually while improving your health and fitness.</p>
+                    <div class="tip-stats">
+                        <span class="tip-impact"><i class="fas fa-bolt"></i> Saves ~400 kg/year</span>
+                        <span class="tip-save">65% of users saved</span>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="tip-btn tip-btn-secondary">
+                            <i class="far fa-bookmark"></i> Save
+                        </button>
+                        <button class="tip-btn tip-btn-primary">
+                            <i class="fas fa-plus"></i> Start Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shopping Tip 1 -->
+            <div class="tip-card" data-category="shopping">
+                <div class="tip-image" style="background-image: url('https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <span class="tip-category"><i class="fas fa-shopping-bag"></i> Shopping</span>
+                </div>
+                <div class="tip-content">
+                    <h3 class="tip-title">Buy Secondhand Clothing</h3>
+                    <div class="difficulty">
+                        <span class="difficulty-label">Difficulty:</span>
+                        <span class="difficulty-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </span>
+                    </div>
+                    <p class="tip-description">Purchasing one secondhand item instead of new each month can save about 120 kg of CO₂ annually from clothing production.</p>
+                    <div class="tip-stats">
+                        <span class="tip-impact"><i class="fas fa-bolt"></i> Saves ~120 kg/year</span>
+                        <span class="tip-save">83% of users saved</span>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="tip-btn tip-btn-secondary">
+                            <i class="far fa-bookmark"></i> Save
+                        </button>
+                        <button class="tip-btn tip-btn-primary">
+                            <i class="fas fa-plus"></i> Start Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Tip 2 -->
+            <div class="tip-card" data-category="home">
+                <div class="tip-image" style="background-image: url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <span class="tip-category"><i class="fas fa-home"></i> Home</span>
+                </div>
+                <div class="tip-content">
+                    <h3 class="tip-title">Switch to LED Bulbs</h3>
+                    <div class="difficulty">
+                        <span class="difficulty-label">Difficulty:</span>
+                        <span class="difficulty-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </span>
+                    </div>
+                    <p class="tip-description">Replacing 5 frequently used light bulbs with LEDs can save about 200 kg of CO₂ annually while reducing your electricity bill.</p>
+                    <div class="tip-stats">
+                        <span class="tip-impact"><i class="fas fa-bolt"></i> Saves ~200 kg/year</span>
+                        <span class="tip-save">95% of users saved</span>
+                    </div>
+                    <div class="tip-actions">
+                        <button class="tip-btn tip-btn-secondary">
+                            <i class="far fa-bookmark"></i> Save
+                        </button>
+                        <button class="tip-btn tip-btn-primary">
+                            <i class="fas fa-plus"></i> Start Challenge
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Category filter functionality
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const category = this.dataset.category;
+                const tips = document.querySelectorAll('.tip-card');
+                
+                if (category === 'all') {
+                    tips.forEach(tip => tip.style.display = 'flex');
+                } else {
+                    tips.forEach(tip => {
+                        if (tip.dataset.category === category) {
+                            tip.style.display = 'flex';
+                        } else {
+                            tip.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+
+        // Save tip functionality
+        document.querySelectorAll('.tip-btn-secondary').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.innerHTML = '<i class="fas fa-bookmark"></i> Saved';
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.innerHTML = '<i class="far fa-bookmark"></i> Save';
+                }
+            });
+        });
+
+        // Start challenge functionality
+        document.querySelectorAll('.tip-btn-primary').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const card = this.closest('.tip-card');
+                const title = card.querySelector('.tip-title').textContent;
+                alert(`Challenge started: "${title}"\n\nYou'll receive reminders and tips to help you succeed!`);
+            });
+        });
+    </script>
+</body>
+</html>

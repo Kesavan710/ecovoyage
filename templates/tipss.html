@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Travel Tips</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --primary-dark: #388E3C;
+            --secondary: #2196F3;
+            --dark: #263238;
+            --light: #F5F7FA;
+            --gray: #CFD8DC;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f9f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--dark);
+            opacity: 0.8;
+        }
+
+        .transport-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .transport-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .transport-icon {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-light);
+            color: white;
+            font-size: 3rem;
+        }
+
+        .transport-name {
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .tips-section {
+            margin-bottom: 50px;
+        }
+
+        .tips-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .tips-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tips-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .tips-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .tips-list {
+            list-style-type: none;
+        }
+
+        .tip-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .tip-item:last-child {
+            border-bottom: none;
+        }
+
+        .tip-number {
+            background-color: var(--primary);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px 0;
+            color: var(--dark);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .transport-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Eco Travel Tips</h1>
+            <p class="subtitle">Reduce your carbon footprint with these transportation tips</p>
+        </header>
+
+        <div class="transport-grid">
+            <div class="transport-card">
+                <div class="transport-icon">🚶</div>
+                <div class="transport-name">Walking</div>
+            </div>
+            <div class="transport-card">
+                <div class="transport-icon">🚴</div>
+                <div class="transport-name">Cycling</div>
+            </div>
+            <div class="transport-card">
+                <div class="transport-icon">🚗</div>
+                <div class="transport-name">Car</div>
+            </div>
+            <div class="transport-card">
+                <div class="transport-icon">🏍</div>
+                <div class="transport-name">Motorcycle</div>
+            </div>
+            <div class="transport-card">
+                <div class="transport-icon">🚆</div>
+                <div class="transport-name">Train</div>
+            </div>
+            <div class="transport-card">
+                <div class="transport-icon">✈</div>
+                <div class="transport-name">Plane</div>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <!-- Walking Tips -->
+            <div class="tips-container">
+                <div class="tips-header">
+                    <div class="tips-icon">🚶</div>
+                    <h2 class="tips-title">Walking Tips</h2>
+                </div>
+                <ul class="tips-list">
+                    <li class="tip-item">
+                        <div class="tip-number">1</div>
+                        <div class="tip-text">Walk for short trips under 1 mile instead of driving</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">2</div>
+                        <div class="tip-text">Use a pedometer or step-tracking app to motivate yourself</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">3</div>
+                        <div class="tip-text">Combine walking with public transit for longer trips</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">4</div>
+                        <div class="tip-text">Walk during lunch breaks for health and environmental benefits</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">5</div>
+                        <div class="tip-text">Organize walking meetings for short-distance business meetings</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">6</div>
+                        <div class="tip-text">Choose walking-friendly neighborhoods when possible</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">7</div>
+                        <div class="tip-text">Invest in comfortable walking shoes to make it more enjoyable</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Cycling Tips -->
+            <div class="tips-container">
+                <div class="tips-header">
+                    <div class="tips-icon">🚴</div>
+                    <h2 class="tips-title">Cycling Tips</h2>
+                </div>
+                <ul class="tips-list">
+                    <li class="tip-item">
+                        <div class="tip-number">1</div>
+                        <div class="tip-text">Bike to work or school at least once a week</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">2</div>
+                        <div class="tip-text">Use bike-sharing programs in your city</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">3</div>
+                        <div class="tip-text">Invest in proper safety gear (helmet, lights, reflective clothing)</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">4</div>
+                        <div class="tip-text">Plan your route using bike lanes and quieter streets</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">5</div>
+                        <div class="tip-text">Combine cycling with public transport for longer distances</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">6</div>
+                        <div class="tip-text">Maintain your bike regularly for optimal performance</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">7</div>
+                        <div class="tip-text">Consider electric bikes for hilly areas or longer commutes</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Car Tips -->
+            <div class="tips-container">
+                <div class="tips-header">
+                    <div class="tips-icon">🚗</div>
+                    <h2 class="tips-title">Car Tips</h2>
+                </div>
+                <ul class="tips-list">
+                    <li class="tip-item">
+                        <div class="tip-number">1</div>
+                        <div class="tip-text">Carpool with colleagues or neighbors</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">2</div>
+                        <div class="tip-text">Maintain proper tire pressure to improve fuel efficiency</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">3</div>
+                        <div class="tip-text">Remove unnecessary weight from your vehicle</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">4</div>
+                        <div class="tip-text">Use cruise control on highways to maintain steady speed</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">5</div>
+                        <div class="tip-text">Avoid aggressive acceleration and braking</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">6</div>
+                        <div class="tip-text">Plan errands to combine multiple trips into one</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">7</div>
+                        <div class="tip-text">Consider switching to an electric or hybrid vehicle</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Motorcycle Tips -->
+            <div class="tips-container">
+                <div class="tips-header">
+                    <div class="tips-icon">🏍</div>
+                    <h2 class="tips-title">Motorcycle Tips</h2>
+                </div>
+                <ul class="tips-list">
+                    <li class="tip-item">
+                        <div class="tip-number">1</div>
+                        <div class="tip-text">Choose a fuel-efficient motorcycle model</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">2</div>
+                        <div class="tip-text">Maintain regular engine servicing for optimal performance</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">3</div>
+                        <div class="tip-text">Avoid unnecessary idling</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">4</div>
+                        <div class="tip-text">Use engine braking when slowing down</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">5</div>
+                        <div class="tip-text">Share rides when possible</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">6</div>
+                        <div class="tip-text">Consider electric motorcycles as an alternative</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">7</div>
+                        <div class="tip-text">Plan routes to avoid heavy traffic and idling</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Train Tips -->
+            <div class="tips-container">
+                <div class="tips-header">
+                    <div class="tips-icon">🚆</div>
+                    <h2 class="tips-title">Train Tips</h2>
+                </div>
+                <ul class="tips-list">
+                    <li class="tip-item">
+                        <div class="tip-number">1</div>
+                        <div class="tip-text">Choose trains over planes for medium-distance travel</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">2</div>
+                        <div class="tip-text">Book non-stop routes when possible</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">3</div>
+                        <div class="tip-text">Travel during off-peak hours to maximize train capacity</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">4</div>
+                        <div class="tip-text">Take advantage of rail passes for frequent travel</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">5</div>
+                        <div class="tip-text">Use overnight trains to save on accommodation emissions</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">6</div>
+                        <div class="tip-text">Advocate for improved rail infrastructure in your area</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">7</div>
+                        <div class="tip-text">Combine train travel with biking at destinations</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Plane Tips -->
+            <div class="tips-container">
+                <div class="tips-header">
+                    <div class="tips-icon">✈</div>
+                    <h2 class="tips-title">Plane Tips</h2>
+                </div>
+                <ul class="tips-list">
+                    <li class="tip-item">
+                        <div class="tip-number">1</div>
+                        <div class="tip-text">Fly economy class (more passengers = lower per-person emissions)</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">2</div>
+                        <div class="tip-text">Choose direct flights to reduce takeoff/landing cycles</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">3</div>
+                        <div class="tip-text">Pack light to reduce aircraft weight</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">4</div>
+                        <div class="tip-text">Offset your flight emissions through reputable programs</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">5</div>
+                        <div class="tip-text">Combine multiple trips into one longer journey</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">6</div>
+                        <div class="tip-text">Consider video conferencing instead of business flights</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-number">7</div>
+                        <div class="tip-text">Choose airlines with newer, more efficient fleets</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>Small changes in transportation habits can make a big difference for our planet.</p>
+        </footer>
+    </div>
+</body>
+</html>

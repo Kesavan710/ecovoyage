@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Tracker - Rewards</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #2196F3;
+            --accent: #FFC107;
+            --dark: #333;
+            --light: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .rewards-dashboard {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .header-card {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary), #8BC34A);
+            color: white;
+        }
+        
+        .badges-card, .points-card {
+            grid-column: span 6;
+        }
+        
+        .discounts-card, .tree-card {
+            grid-column: span 4;
+        }
+        
+        .challenges-card {
+            grid-column: span 8;
+        }
+        
+        .avatar-card {
+            grid-column: span 4;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .badge {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        
+        .badge.unlocked {
+            background-color: var(--accent);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+        }
+        
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--secondary);
+            border-radius: 10px;
+        }
+        
+        .points-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .partner-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .challenge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .avatar-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .avatar-option {
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-option.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        
+        .locked {
+            position: relative;
+            opacity: 0.6;
+        }
+        
+        .locked::after {
+            content: "🔒";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .rewards-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                grid-column: span 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="rewards-dashboard">
+            <!-- Header Section -->
+            <div class="card header-card">
+                <h1>Your Eco Rewards</h1>
+                <p>Earn rewards for reducing your carbon footprint!</p>
+            </div>
+            
+            <!-- Badges & Achievements -->
+            <div class="card badges-card">
+                <h2>🏅 Badges & Achievements</h2>
+                <p>Unlock badges by reaching milestones</p>
+                
+                <div class="badge-grid">
+                    <div class="badge unlocked">
+                        <div class="badge-icon">🌱</div>
+                        <h3>Eco-Starter</h3>
+                        <p>First week completed</p>
+                    </div>
+                    
+                    <div class="badge unlocked">
+                        <div class="badge-icon">🚲</div>
+                        <h3>Green Traveler</h3>
+                        <p>5 bike/walk trips</p>
+                    </div>
+                    
+                    <div class="badge">
+                        <div class="badge-icon">🛡️</div>
+                        <h3>Eco-Warrior</h3>
+                        <p>Reduce CO₂ by 50%</p>
+                    </div>
+                    
+                    <div class="badge">
+                        <div class="badge-icon">⚖️</div>
+                        <h3>Carbon Neutral</h3>
+                        <p>Keep under 1 ton/month</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Points System -->
+            <div class="card points-card">
+                <h2>💰 Virtual Coins</h2>
+                <p>Earn points for every kg of CO₂ saved</p>
+                
+                <div class="points-display">
+                    1,850 pts
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Next Reward</span>
+                        <span>500/2000 pts</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 15px;">
+                    Redeem Points
+                </button>
+            </div>
+            
+            <!-- Discounts & Coupons -->
+            <div class="card discounts-card">
+                <h2>🎟️ Partner Discounts</h2>
+                <p>Redeem your points for special offers</p>
+                
+                <div class="partner-grid">
+                    <div class="partner-card">
+                        <h3>EV Rentals</h3>
+                        <p>15% off</p>
+                        <p>500 pts</p>
+                        <button class="btn btn-primary">Claim</button>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h3>Organic Store</h3>
+                        <p>$10 voucher</p>
+                        <p>750 pts</p>
+                        <button class="btn btn-primary">Claim</button>
+                    </div>
+                    
+                    <div class="partner-card">
+                        <h3>Bike Shop</h3>
+                        <p>Free service</p>
+                        <p>1000 pts</p>
+                        <button class="btn btn-primary">Claim</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tree Planting -->
+            <div class="card tree-card">
+                <h2>🌱 Tree Planting</h2>
+                <p>Convert points into real impact</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="font-size: 3rem;">🌳</div>
+                    <p>For every 1000 points, we plant a tree in your name</p>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Next Tree</span>
+                        <span>850/1000 pts</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%"></div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%;">
+                    Donate Points
+                </button>
+            </div>
+            
+            <!-- Challenges -->
+            <div class="card challenges-card">
+                <h2>🔥 Exclusive Challenges</h2>
+                <p>Complete challenges for bonus rewards</p>
+                
+                <div style="margin-top: 20px;">
+                    <div class="challenge-item">
+                        <div>
+                            <h3>Low Carbon Week</h3>
+                            <p>Keep emissions under 0.5 tons this week</p>
+                        </div>
+                        <button class="btn btn-secondary">Join</button>
+                    </div>
+                    
+                    <div class="challenge-item">
+                        <div>
+                            <h3>Car-Free Streak</h3>
+                            <p>5 days without driving</p>
+                        </div>
+                        <button class="btn btn-secondary">Join</button>
+                    </div>
+                    
+                    <div class="challenge-item">
+                        <div>
+                            <h3>Vegan Week</h3>
+                            <p>Try plant-based meals all week</p>
+                        </div>
+                        <button class="btn btn-secondary">Join</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Avatar Customization -->
+            <div class="card avatar-card">
+                <h2>🎨 Custom Avatar</h2>
+                <p>Unlock special profile themes</p>
+                
+                <div class="avatar-options">
+                    <div class="avatar-option selected">👤</div>
+                    <div class="avatar-option unlocked">🌍</div>
+                    <div class="avatar-option unlocked">🌳</div>
+                    <div class="avatar-option locked"></div>
+                    <div class="avatar-option locked"></div>
+                    <div class="avatar-option locked"></div>
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                    Apply Theme
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate progress bars
+            const progressBars = document.querySelectorAll('.progress-fill');
+            
+            progressBars.forEach(bar => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, 100);
+            });
+            
+            // Handle badge clicks
+            document.querySelectorAll('.badge').forEach(badge => {
+                badge.addEventListener('click', function() {
+                    if (!this.classList.contains('unlocked')) {
+                        alert('Keep working to unlock this badge!');
+                    }
+                });
+            });
+            
+            // Handle avatar selection
+            document.querySelectorAll('.avatar-option:not(.locked)').forEach(avatar => {
+                avatar.addEventListener('click', function() {
+                    document.querySelectorAll('.avatar-option').forEach(av => {
+                        av.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Button click handlers
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    if (action === 'Join') {
+                        alert('Challenge joined! Good luck!');
+                    } else if (action === 'Claim') {
+                        alert('Discount claimed! Check your email.');
+                    } else {
+                        alert(`Action: ${action}`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
